@@ -1,0 +1,45 @@
+{
+  "name": "随身下载插件源",
+  "plugins": [
+    {
+      "id": "bing.wallpaper",
+      "name": "必应壁纸",
+      "version": "1.0",
+      "author": "ssxz",
+      "description": "搜索并下载必应每日壁纸（最近约 15 天），输入“最新”查看全部",
+      "url": "bing-wallpaper.js"
+    },
+    {
+      "id": "douyin.share",
+      "name": "抖音解析",
+      "version": "1.2",
+      "author": "ssxz",
+      "description": "粘贴抖音分享内容，解析并下载视频、图文或配乐（解析由 api.bugpk.com 提供）",
+      "url": "douyin.js"
+    },
+    {
+      "id": "magnet.aggregate",
+      "name": "磁力聚合",
+      "version": "1.0",
+      "author": "ssxz",
+      "description": "聚合搜索 磁力王、天天磁力 两个站点的磁力链接",
+      "url": "magnet-aggregate.js"
+    },
+    {
+      "id": "netdisk.share",
+      "name": "网盘解析",
+      "version": "1.5",
+      "author": "ssxz",
+      "description": "解析蓝奏云、夸克网盘、百度网盘的分享链接（支持文件夹和提取码），取出文件并下载",
+      "url": "netdisk.js"
+    },
+    {
+      "id": "web.sniffer",
+      "name": "网页视频嗅探",
+      "version": "1.0",
+      "author": "ssxz",
+      "description": "粘贴网页地址，找出页面里的视频和音频并下载，支持 m3u8",
+      "url": "web-sniffer.js"
+    }
+  ]
+}
