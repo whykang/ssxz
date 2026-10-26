@@ -10,14 +10,6 @@
       "url": "bing-wallpaper.js"
     },
     {
-      "id": "douyin.share",
-      "name": "抖音解析",
-      "version": "1.2",
-      "author": "ssxz",
-      "description": "粘贴抖音分享内容，解析并下载视频、图文或配乐（解析由 api.bugpk.com 提供）",
-      "url": "douyin.js"
-    },
-    {
       "id": "netdisk.share",
       "name": "网盘解析",
       "version": "1.6",
