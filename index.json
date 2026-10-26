@@ -18,20 +18,20 @@
       "url": "douyin.js"
     },
     {
-      "id": "magnet.aggregate",
-      "name": "磁力聚合",
-      "version": "1.0",
-      "author": "ssxz",
-      "description": "聚合搜索 磁力王、天天磁力 两个站点的磁力链接",
-      "url": "magnet-aggregate.js"
-    },
-    {
       "id": "netdisk.share",
       "name": "网盘解析",
       "version": "1.5",
       "author": "ssxz",
       "description": "解析蓝奏云、夸克网盘、百度网盘的分享链接（支持文件夹和提取码），取出文件并下载",
       "url": "netdisk.js"
+    },
+    {
+      "id": "shortvideo.aggregate",
+      "name": "短视频聚合解析",
+      "version": "1.2",
+      "author": "ssxz",
+      "description": "粘贴分享内容，解析并下载抖音、快手、小红书、B站、微博等平台的视频或图文",
+      "url": "short-video.js"
     },
     {
       "id": "web.sniffer",
