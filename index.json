@@ -28,9 +28,9 @@
     {
       "id": "web.sniffer",
       "name": "网页视频嗅探",
-      "version": "1.0",
+      "version": "2.0",
       "author": "ssxz",
-      "description": "粘贴网页地址，找出页面里的视频和音频并下载，支持 m3u8",
+      "description": "粘贴网页地址，在应用里打开网页并自动嗅探视频和音频，支持 m3u8",
       "url": "web-sniffer.js"
     }
   ]
