@@ -8,12 +8,14 @@
 const meta = {
   id: "netdisk.share",
   name: "网盘解析",
-  version: "1.5",
+  version: "1.6",
   author: "ssxz",
   description: "解析蓝奏云、夸克网盘、百度网盘的分享链接（支持文件夹和提取码），取出文件并下载",
   // 蓝奏云的域名很多且经常更换，用通配符覆盖
   hosts: [
     "lanzou*.com", "woozooo.com", "lanrar.com", "lanzn.com", "lanpw.com", "lanpv.com", "lanwp.com",
+    // 蓝奏的文件下载服务器
+    "dmpdmp.com",
     "quark.cn", "baidu.com",
   ],
   clipboard: [
@@ -43,10 +45,49 @@ const TEMP_KEEP = 6 * 3600 * 1000;
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 const MAX_PAGES = 6;   // 文件夹最多取 6 页（每页约 50 个文件）
 
+// 浏览器完成蓝奏的访问验证后拿到的 Cookie，后续请求带上它
+let lanzouCookie = "";
+
 function headers(referer) {
   const h = { "User-Agent": UA, "Accept-Language": "zh-CN,zh;q=0.9" };
   if (referer) h.Referer = referer;
+  if (lanzouCookie) h.Cookie = lanzouCookie;
   return h;
+}
+
+// 蓝奏部分页面前面有一道浏览器验证（返回一段要执行的脚本，而不是真正的页面）
+function isChallenge(page) {
+  return /acw_sc__v2|var\s+arg1\s*=/.test(page) && !/<title>/i.test(page);
+}
+
+// 用应用内的浏览器打开页面，让它自己完成验证，再取真正的页面内容和验证后的 Cookie
+async function openInBrowser(url) {
+  const raw = await web.load(url, {
+    userAgent: UA,
+    timeout: 25000,
+    withCookie: true,
+    script: "(document.readyState !== 'complete' || document.documentElement.outerHTML.indexOf('acw_sc__v2') >= 0) ? '' : " +
+      "JSON.stringify({ html: document.documentElement.outerHTML, cookie: document.cookie })",
+  });
+  let outer = JSON.parse(raw);
+  // 新版应用返回 {result, cookie}（含 HttpOnly 的完整 Cookie）；旧版只返回脚本结果
+  let fullCookie = "";
+  if (typeof outer.result === "string") {
+    fullCookie = outer.cookie || "";
+    outer = JSON.parse(outer.result);
+  }
+  lanzouCookie = fullCookie || outer.cookie || lanzouCookie;
+  return outer.html || "";
+}
+
+// 取蓝奏页面：遇到验证页就交给浏览器
+async function lanzouPage(url, referer) {
+  const page = await http.get(url, headers(referer));
+  if (!isChallenge(page)) return page;
+  log("蓝奏页面需要浏览器验证", url);
+  const real = await openInBrowser(url);
+  if (!real || isChallenge(real)) throw new Error("蓝奏的访问验证没有通过，请稍后再试");
+  return real;
 }
 
 function formBody(fields) {
@@ -173,7 +214,7 @@ async function listFolder(link, origin, page, script, code) {
 
 async function fileDownload(fileUrl, code, knownName) {
   const origin = /^https?:\/\/[^\/]+/.exec(fileUrl)[0];
-  let page = await http.get(fileUrl, headers());
+  let page = await lanzouPage(fileUrl);
   if (unavailable(page)) throw new Error("文件已取消分享或不存在");
   let script = pageScript(page);
   let frameUrl = fileUrl;
@@ -186,7 +227,7 @@ async function fileDownload(fileUrl, code, knownName) {
     const frame = html.select(page, "iframe[src]").map((f) => f.attrs.src).filter(Boolean)[0];
     if (frame) {
       frameUrl = origin + (frame[0] === "/" ? "" : "/") + frame;
-      page = await http.get(frameUrl, headers(fileUrl));
+      page = await lanzouPage(frameUrl, fileUrl);
       script = pageScript(page);
     }
   } else if (!code) {
@@ -751,7 +792,7 @@ async function resolve(text) {
 
   // 蓝奏云
   const origin = /^https?:\/\/[^\/]+/.exec(link)[0];
-  const page = await http.get(link, headers());
+  const page = await lanzouPage(link);
   if (unavailable(page)) throw new Error("分享已取消或不存在");
   const script = pageScript(page);
   if (/filemoreajax\.php/.test(script)) {

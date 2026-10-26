@@ -20,7 +20,7 @@
     {
       "id": "netdisk.share",
       "name": "网盘解析",
-      "version": "1.5",
+      "version": "1.6",
       "author": "ssxz",
       "description": "解析蓝奏云、夸克网盘、百度网盘的分享链接（支持文件夹和提取码），取出文件并下载",
       "url": "netdisk.js"
